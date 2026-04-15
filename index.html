@@ -7,16 +7,20 @@
 </head>
 <body>
 
-    <h1>TechHope</h1>
-    <h2>Desafio de Programação</h2>
+    <div class="container">
+        <h1>TechHope</h1>
+        <h2>Aprenda Programação Jogando 🎮</h2>
 
-    <p>Quanto é 2 + 2?</p>
+        <div class="card">
+            <p id="pergunta">Carregando pergunta...</p>
 
-    <input type="text" id="resposta">
-    <button onclick="verificar()">Responder</button>
+            <input type="text" id="resposta" placeholder="Digite sua resposta">
+            <button onclick="verificar()">Responder</button>
 
-    <p id="resultado"></p>
-    <p id="pontos">Pontos: 0</p>
+            <p id="resultado"></p>
+            <p id="pontos">Pontos: 0</p>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
