@@ -22,7 +22,7 @@ function carregarPergunta() {
 }
 
 function verificar() {
-    let respostaUsuario = document.getElementById("resposta").value.toLowerCase();
+    let respostaUsuario = document.getElementById("resposta").value.trim().toLowerCase();
 
     if (respostaUsuario == perguntas[atual].resposta) {
         document.getElementById("resultado").innerText = "✅ Correto!";
