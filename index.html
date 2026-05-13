@@ -1,235 +1,75 @@
-let perguntas = [
-    {
-        pergunta: "Qual linguagem roda no navegador?",
-        alternativas: [
-            "Python",
-            "Java",
-            "JavaScript",
-            "C++"
-        ],
-        correta: 2
-    },
+<!DOCTYPE html>
+<html lang="pt-BR">
 
-    {
-        pergunta: "Qual tag cria um título no HTML?",
-        alternativas: [
-            "<div>",
-            "<h1>",
-            "<body>",
-            "<span>"
-        ],
-        correta: 1
-    },
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechHope</title>
 
-    {
-        pergunta: "Qual propriedade muda a cor no CSS?",
-        alternativas: [
-            "background",
-            "font-size",
-            "color",
-            "padding"
-        ],
-        correta: 2
-    }
-];
+    <link rel="stylesheet" href="style.css">
 
-let atual = 0;
-let xp = 0;
-let vidas = 3;
-let combo = 0;
-let tempo = 15;
-let intervalo;
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
 
-function iniciarJogo() {
+<body>
 
-    atual = 0;
-    xp = 0;
-    vidas = 3;
-    combo = 0;
+    <div class="app">
 
-    atualizarHUD();
+        <aside class="sidebar">
 
-    carregarPergunta();
-}
+            <h1>TechHope</h1>
 
-function carregarPergunta() {
+            <div class="player-box">
+                <h2>Jogador</h2>
 
-    if (atual >= perguntas.length) {
+                <p>⭐ XP: <span id="xp">0</span></p>
+                <p>❤️ Vidas: <span id="vidas">3</span></p>
+                <p>🔥 Combo: <span id="combo">0</span></p>
+            </div>
 
-        finalizarJogo();
-        return;
-    }
+            <div class="menu">
+                <button onclick="iniciarJogo()">
+                    Jogar
+                </button>
+            </div>
 
-    tempo = 15;
+        </aside>
 
-    iniciarTimer();
+        <main class="game-area">
 
-    let perguntaAtual = perguntas[atual];
+            <div class="top-bar">
 
-    document.getElementById("pergunta")
-        .innerText = perguntaAtual.pergunta;
+                <div class="progress-container">
+                    <div class="progress"></div>
+                </div>
 
-    let alternativasHTML = "";
+                <div class="timer">
+                    ⏱️ <span id="tempo">15</span>
+                </div>
 
-    perguntaAtual.alternativas.forEach((alt, index) => {
+            </div>
 
-        alternativasHTML += `
-            <button onclick="verificar(${index}, this)">
-                ${alt}
-            </button>
-        `;
-    });
+            <div class="quiz-card">
 
-    document.getElementById("alternativas")
-        .innerHTML = alternativasHTML;
+                <h2 id="pergunta">
+                    Clique em jogar para começar
+                </h2>
 
-    atualizarBarra();
-}
+                <div id="alternativas" class="alternativas">
 
-function verificar(index, botao) {
+                </div>
 
-    clearInterval(intervalo);
+                <p id="mensagem"></p>
 
-    let correta = perguntas[atual].correta;
+            </div>
 
-    let botoes =
-        document.querySelectorAll(".alternativas button");
+        </main>
 
-    botoes.forEach(btn => {
-        btn.disabled = true;
-    });
+    </div>
 
-    if (index === correta) {
+    <script src="script.js"></script>
 
-        botao.classList.add("correta");
+</body>
 
-        xp += 10;
-        combo++;
-
-        document.getElementById("mensagem")
-            .innerText = "✅ Resposta correta!";
-
-    } else {
-
-        botao.classList.add("errada");
-
-        botoes[correta].classList.add("correta");
-
-        vidas--;
-        combo = 0;
-
-        document.getElementById("mensagem")
-            .innerText = "❌ Resposta errada!";
-    }
-
-    atualizarHUD();
-
-    if (vidas <= 0) {
-
-        setTimeout(() => {
-            gameOver();
-        }, 1500);
-
-        return;
-    }
-
-    atual++;
-
-    setTimeout(() => {
-
-        document.getElementById("mensagem")
-            .innerText = "";
-
-        carregarPergunta();
-
-    }, 1500);
-}
-
-function atualizarHUD() {
-
-    document.getElementById("xp")
-        .innerText = xp;
-
-    document.getElementById("vidas")
-        .innerText = vidas;
-
-    document.getElementById("combo")
-        .innerText = combo;
-}
-
-function atualizarBarra() {
-
-    let progresso =
-        (atual / perguntas.length) * 100;
-
-    document.querySelector(".progress")
-        .style.width = `${progresso}%`;
-}
-
-function iniciarTimer() {
-
-    clearInterval(intervalo);
-
-    document.getElementById("tempo")
-        .innerText = tempo;
-
-    intervalo = setInterval(() => {
-
-        tempo--;
-
-        document.getElementById("tempo")
-            .innerText = tempo;
-
-        if (tempo <= 0) {
-
-            clearInterval(intervalo);
-
-            vidas--;
-
-            atualizarHUD();
-
-            document.getElementById("mensagem")
-                .innerText = "⏱️ Tempo esgotado!";
-
-            if (vidas <= 0) {
-
-                gameOver();
-
-            } else {
-
-                atual++;
-
-                setTimeout(() => {
-
-                    carregarPergunta();
-
-                }, 1200);
-            }
-        }
-
-    }, 1000);
-}
-
-function gameOver() {
-
-    document.getElementById("pergunta")
-        .innerText = " Game Over";
-
-    document.getElementById("alternativas")
-        .innerHTML = "";
-
-    document.getElementById("mensagem")
-        .innerText = `XP final: ${xp}`;
-}
-
-function finalizarJogo() {
-
-    document.getElementById("pergunta")
-        .innerText = "🎉 Você venceu!";
-
-    document.getElementById("alternativas")
-        .innerHTML = "";
-
-    document.getElementById("mensagem")
-        .innerText = `Pontuação final: ${xp}`;
-}
+</html>
