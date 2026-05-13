@@ -1,49 +1,235 @@
-let pontos = 0;
-
 let perguntas = [
     {
-        pergunta: "Quanto é 2 + 2?",
-        resposta: "4"
+        pergunta: "Qual linguagem roda no navegador?",
+        alternativas: [
+            "Python",
+            "Java",
+            "JavaScript",
+            "C++"
+        ],
+        correta: 2
     },
+
     {
-        pergunta: "Quanto é 5 * 3?",
-        resposta: "15"
+        pergunta: "Qual tag cria um título no HTML?",
+        alternativas: [
+            "<div>",
+            "<h1>",
+            "<body>",
+            "<span>"
+        ],
+        correta: 1
     },
+
     {
-        pergunta: "Qual linguagem usamos no navegador?",
-        resposta: "javascript"
+        pergunta: "Qual propriedade muda a cor no CSS?",
+        alternativas: [
+            "background",
+            "font-size",
+            "color",
+            "padding"
+        ],
+        correta: 2
     }
 ];
 
 let atual = 0;
+let xp = 0;
+let vidas = 3;
+let combo = 0;
+let tempo = 15;
+let intervalo;
 
-function carregarPergunta() {
-    document.getElementById("pergunta").innerText = perguntas[atual].pergunta;
+function iniciarJogo() {
+
+    atual = 0;
+    xp = 0;
+    vidas = 3;
+    combo = 0;
+
+    atualizarHUD();
+
+    carregarPergunta();
 }
 
-function verificar() {
-    let respostaUsuario = document.getElementById("resposta").value.trim().toLowerCase();
+function carregarPergunta() {
 
-    if (respostaUsuario == perguntas[atual].resposta) {
-        document.getElementById("resultado").innerText = "✅ Correto!";
-        pontos += 10;
-    } else {
-        document.getElementById("resultado").innerText = "❌ Errado!";
+    if (atual >= perguntas.length) {
+
+        finalizarJogo();
+        return;
     }
 
-    document.getElementById("pontos").innerText = "Pontos: " + pontos;
+    tempo = 15;
+
+    iniciarTimer();
+
+    let perguntaAtual = perguntas[atual];
+
+    document.getElementById("pergunta")
+        .innerText = perguntaAtual.pergunta;
+
+    let alternativasHTML = "";
+
+    perguntaAtual.alternativas.forEach((alt, index) => {
+
+        alternativasHTML += `
+            <button onclick="verificar(${index}, this)">
+                ${alt}
+            </button>
+        `;
+    });
+
+    document.getElementById("alternativas")
+        .innerHTML = alternativasHTML;
+
+    atualizarBarra();
+}
+
+function verificar(index, botao) {
+
+    clearInterval(intervalo);
+
+    let correta = perguntas[atual].correta;
+
+    let botoes =
+        document.querySelectorAll(".alternativas button");
+
+    botoes.forEach(btn => {
+        btn.disabled = true;
+    });
+
+    if (index === correta) {
+
+        botao.classList.add("correta");
+
+        xp += 10;
+        combo++;
+
+        document.getElementById("mensagem")
+            .innerText = "✅ Resposta correta!";
+
+    } else {
+
+        botao.classList.add("errada");
+
+        botoes[correta].classList.add("correta");
+
+        vidas--;
+        combo = 0;
+
+        document.getElementById("mensagem")
+            .innerText = "❌ Resposta errada!";
+    }
+
+    atualizarHUD();
+
+    if (vidas <= 0) {
+
+        setTimeout(() => {
+            gameOver();
+        }, 1500);
+
+        return;
+    }
 
     atual++;
 
-    if (atual < perguntas.length) {
-        setTimeout(() => {
-            document.getElementById("resposta").value = "";
-            document.getElementById("resultado").innerText = "";
-            carregarPergunta();
-        }, 1000);
-    } else {
-        document.getElementById("pergunta").innerText = "Fim do jogo!";
-    }
+    setTimeout(() => {
+
+        document.getElementById("mensagem")
+            .innerText = "";
+
+        carregarPergunta();
+
+    }, 1500);
 }
 
-carregarPergunta();
+function atualizarHUD() {
+
+    document.getElementById("xp")
+        .innerText = xp;
+
+    document.getElementById("vidas")
+        .innerText = vidas;
+
+    document.getElementById("combo")
+        .innerText = combo;
+}
+
+function atualizarBarra() {
+
+    let progresso =
+        (atual / perguntas.length) * 100;
+
+    document.querySelector(".progress")
+        .style.width = `${progresso}%`;
+}
+
+function iniciarTimer() {
+
+    clearInterval(intervalo);
+
+    document.getElementById("tempo")
+        .innerText = tempo;
+
+    intervalo = setInterval(() => {
+
+        tempo--;
+
+        document.getElementById("tempo")
+            .innerText = tempo;
+
+        if (tempo <= 0) {
+
+            clearInterval(intervalo);
+
+            vidas--;
+
+            atualizarHUD();
+
+            document.getElementById("mensagem")
+                .innerText = "⏱️ Tempo esgotado!";
+
+            if (vidas <= 0) {
+
+                gameOver();
+
+            } else {
+
+                atual++;
+
+                setTimeout(() => {
+
+                    carregarPergunta();
+
+                }, 1200);
+            }
+        }
+
+    }, 1000);
+}
+
+function gameOver() {
+
+    document.getElementById("pergunta")
+        .innerText = "💀 Game Over";
+
+    document.getElementById("alternativas")
+        .innerHTML = "";
+
+    document.getElementById("mensagem")
+        .innerText = `XP final: ${xp}`;
+}
+
+function finalizarJogo() {
+
+    document.getElementById("pergunta")
+        .innerText = "🎉 Você venceu!";
+
+    document.getElementById("alternativas")
+        .innerHTML = "";
+
+    document.getElementById("mensagem")
+        .innerText = `Pontuação final: ${xp}`;
+}
